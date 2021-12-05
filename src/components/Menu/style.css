@@ -1,0 +1,16 @@
+.menu {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 0.5rem;
+    width: 35%;
+    justify-content: right;
+}
+
+.menu a {
+    text-decoration: none;
+    background: var(--oranzova);
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 2rem;
+    border: 0.2rem solid var(--bila);
+}

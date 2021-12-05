@@ -1,0 +1,16 @@
+.header {
+    display: inline;
+}
+
+.header h1 {
+    display: inline;
+}
+
+.header__title {
+    font-family: 'Bangers', cursive;
+    color: var(--bila);
+    font-size: 7rem;
+    letter-spacing: 0.3rem;
+    margin: 1.9rem 0 0 0;
+    display: inline;
+}

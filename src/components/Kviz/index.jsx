@@ -1,91 +1,90 @@
 import React from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import Otazka from '../Otazka';
+import Vyhodnoceni from '../Vyhodnoceni';
 
 import './style.css';
 
 const Kviz = () => {
-  const { id, otazkaId } = useParams();
-  console.log(id);
-  /* const stringId = id.toString();
-  console.log(stringId); */
+  const { id } = useParams();
+  //console.log('id: ' + id);
 
-  const [kviz, setKviz] = useState(null);
-  const [i, setI] = useState(0);
-  //const[correct, setCorrect] = useState(0);
-  const fetchKviz = () => {
-    fetch(
-      `https://github.com/Czechitas-React-podklady/superkviz-api/blob/main/quiz/${id}.json`,
-    )
-      .then((response) => response.json())
-      .then((data) => setKviz(data));
-  };
+  const [questions, setQuestions] = useState(null);
+  const [activeQuestion, setActiveQuestion] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [answers, setAnswers] = useState([]);
 
   useEffect(() => {
-    fetchKviz();
-  }, []);
-  console.log(kviz);
+    fetch(
+      `https://raw.githubusercontent.com/Czechitas-React-podklady/superkviz-api/main/quiz/${id}.json`,
+    )
+      .then((response) => response.json())
+      .then((json) => {
+        //console.log(json);
+        //setActiveQuestion(0);
+        setQuestions(json.questions);
+        setLoading(false);
+      }),
+      [];
+  });
+  //console.log(questions);
 
-  /*  const handleClick = (choosen) => {
-    setI(i + 1);
-  }; */
+  const handleAnswer = (answer) => {
+    console.log(answer);
+
+    setAnswers(answers.concat([answer]));
+    setAnswers([...answers, answer]); //bude obsahovat vsetky prvky puvodniho pole a este answer ktoru som ted dostal
+    setActiveQuestion(activeQuestion + 1);
+  };
+
+  /*  if (activeQuestion === undefined) {
+    return <p>načitavam data</p>;
+  } */
+
+  //ak neni nacitane vrat loading
+  if (loading) {
+    return <p>načitavam data</p>;
+  }
+
+  if (activeQuestion === questions.length) {
+    //return <p>výsledek</p>;
+    return <Vyhodnoceni questions={questions} answers={answers} />;
+  }
 
   return (
     <>
-      <div className="question">
-        <p className="question__number">
-          {/* Otázka 1 / 5 */}Otázka {i + 1}/5
-        </p>
+      <h1>Detail kvizu</h1>
+      <p>{id}</p>
 
-        <h2 className="question__title">
-          {/* Zrcadlo, kdo je na světě nejkrásnější? */}
-          {kviz.questions[i].title}
-        </h2>
+      {/* {JSON.stringify(questions)} */}
 
-        <div className="question__content">
-          <img
-            className="question__image"
-            /* src="../assets/snehurka.jpg" */
-            src={kviz.questions[i].image}
-            alt="Ilustrační obrázek"
-          />
+      <Otazka
+        questionNumber={activeQuestion + 1}
+        questionsCount={questions.length}
+        title={questions[activeQuestion].title}
+        image={questions[activeQuestion].image}
+        answers={questions[activeQuestion].answers}
+        handleAnswer={handleAnswer}
+      />
 
-          <div className="question__answers">
-            {/* <button className="question__answer">Ledová královna</button>
-            <button className="question__answer">Sněhurka</button>
-            <button className="question__answer">
-              Já! Já jsem nejkrásnější.
-            </button> */}
-            <Link
-              className="question__answer"
-              to={
-                i + 1 < ClipboardItem.questions.length
-                  ? `/kvizy/${id}`
-                  : `/kvizy/vysledek`
-              }
-              onClick={() => handleClick(0)}
-            ></Link>
-            <Link
-              className="question__answer"
-              to={
-                i + 1 < ClipboardItem.questions.length
-                  ? `/kvizy/${id}`
-                  : `/kvizy/vysledek`
-              }
-              onClick={() => handleClick(1)}
-            ></Link>
-            <Link
-              className="question__answer"
-              to={
-                i + 1 < ClipboardItem.questions.length
-                  ? `/kvizy/${id}`
-                  : `/kvizy/vysledek`
-              }
-              onClick={() => handleClick(2)}
-            ></Link>
-          </div>
+      {/*       <div className="question">
+      <p className="question__number">Otázka {activeQuestion + 1} / 5</p>
+      <h2 className="question__title">{questions[activeQuestion].title}</h2>
+      <div class="question__content">
+        <img
+          class="question__image"
+          src={questions[activeQuestion].image}
+          alt="Ilustrační obrázek"
+        />
+
+        <div class="question__answers">
+          {questions[activeQuestion].answers.map((element) => (
+            <button className="question__answer">{element}</button>
+          ))}
         </div>
       </div>
+    </div> */}
     </>
   );
 };
